@@ -13,9 +13,7 @@ set.seed(1000)
 s1= cdf[sample(nrow(cdf),1000, replace=FALSE, prob = NULL),]
 
 #derive response variable
-resp = Surv(as.numeric(as.Date(s1$First_Purchase, origin='1900-01-01')), 
-            as.numeric(as.Date(s1$Last_Purchase,  origin='1900-01-01')),
-            s1$Churn_30)
+resp = Surv(s1$First_Purchase, s1$Last_Purchase, s1$Churn_30)
 #Fit a survival curve
 fit = survfit(resp ~ 1, data=s1)
 #plot the survival curve
