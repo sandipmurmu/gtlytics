@@ -1,11 +1,12 @@
 
 
-mbr = read.csv(file.choose(), header=TRUE, na.strings=c("","NA"))
+mbr = read.csv(file.choose(), header=TRUE, na.strings=c("","0","NA"))
 
 ds=mbr
 #ds = mbr[c("gender","marital_status","occupation", "total_visits")]
 
 df = data.frame(ds)
+
 
 propmiss = function(df) {
   m = sapply(df, function(x) {
