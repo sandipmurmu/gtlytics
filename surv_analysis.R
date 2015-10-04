@@ -20,7 +20,6 @@ response = Surv(ActivePeriod, event = Churn_450)
 #Kaplain-Meier estimator with no covariates
 km.surv = survfit(response ~ 1,type="kaplan-meier",data=s1)
 summary(km.surv)
-#plot(km.surv)
 plot(km.surv, mark.time = FALSE, ylim=c(.75,1),xlab = "Days Active", ylab="Percent Surviving")
 
 #Kaplain-Meier estimator by gender
