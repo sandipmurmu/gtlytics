@@ -4,45 +4,45 @@ customers = read.csv(file.choose(), header=TRUE)
 #create a data frame from the data set
 cdf = as.data.frame(customers)
 
-###survival analysis for various churn levels
 
 #install.packages("survival")
 library(survival)
 
-#1000 samples for test 1, churn 
+
 set.seed(1000)
+detach(s1)
+#1000 samples randomly taken 
 s1= cdf[sample(nrow(cdf),1000, replace=FALSE, prob = NULL),]
 attach(s1)
-#detach(s1)
+
 
 #derive response variable, referred as survival object
-response = Surv(ActivePeriod, event = Churn_180)
+response = Surv(time=ceiling(ActivePeriod/30), event = Churn_90)
 
 #Kaplain-Meier estimator with no covariates
 km.surv = survfit(response ~ 1,type="kaplan-meier",data=s1)
 summary(km.surv)
-plot(km.surv, mark.time = FALSE,xlab = "Days Active", ylab="Percent Surviving")
+plot(km.surv, mark.time = FALSE, ylim=c(.7,1), xlab = "Months", ylab="Percent Surviving")
 grid()
 
 #Kaplain-Meier estimator by gender
 km.surv.gender = survfit(response ~ Sex,type="kaplan-meier",data=s1)
 summary(km.surv.gender)
 plot(km.surv.gender, mark.time = FALSE, ylim=c(.75,1), xlab = "Days Active", ylab="Percent Surviving")
-
-
-fit = glm(formula = Churn_180 ~ NumOfVisits + VisitInterval, data = s1, family = "binomial")
-summary(fit)
+grid()
 
 
 
 #Cox Regression using coxph function for coefficients and hazard rates
 cox.response = coxph(formula = response ~ NumOfVisits + VisitInterval,data = s1)
 summary(cox.response)
-#plot(survfit(cox.model), xscale=365.25,xlab = "Days Active", ylab = "Proportion Survived", main="Hazard curve")
+plot(survfit(cox.model), xscale=365.25,xlab = "Days Active", ylab = "Proportion Survived", main="Hazard curve")
+
 #predict hazard ratio
 cox.zph(cox.response)
 plot(km.surv)
 grid()
+
 predRes <- predict(cox.response, type="risk")
 head(predRes)
 
@@ -53,3 +53,4 @@ summary(exp)
 
 weibull = survreg(response ~ NumOfVisits + VisitInterval, data=s1, dist = "weibull")
 summary(weibull)
+
