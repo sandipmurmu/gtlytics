@@ -43,8 +43,8 @@ cox.zph(cox.response)
 plot(km.surv)
 grid()
 
-predRes <- predict(cox.response, type="risk")
-head(predRes)
+#predRes <- predict(cox.response, type="risk")
+#head(predRes)
 
 
 #Paramteric analysis
