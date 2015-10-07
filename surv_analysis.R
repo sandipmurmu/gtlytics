@@ -2,6 +2,15 @@
 ds = read.csv(file.choose(), header=TRUE)
 cdf = as.data.frame(ds)
 
+#plot the distribution of the data set
+days = cdf$ActivePeriod
+d = density(days)
+plot(d)
+#Normal Q-Q plot
+z= (days-mean(days))/sd(days) 
+qqnorm(z)
+abline(0,1)
+
 
 #install.packages("GGally")
 #install.packages("survival")
@@ -22,13 +31,11 @@ response = Surv(ActivePeriod, churn)
 #Kaplain-Meier estimator with no covariates
 km.surv = survfit(response ~ 1,type="kaplan-meier",data=mini)
 summary(km.surv)
-#plot(km.surv, mark.time = FALSE, xlab = "Days", ylab="Proportion Surviving")
 ggsurv(km.surv)
 
 #Kaplain-Meier estimator by gender
 km.surv.gender = survfit(response ~ Sex,type="kaplan-meier",data=mini)
 summary(km.surv.gender)
-#plot(km.surv.gender, mark.time = FALSE,  xlab = "Days Active", ylab="Percent Surviving")
 ggsurv(km.surv.gender)
 
 
@@ -37,9 +44,10 @@ ggsurv(km.surv.gender)
 cox.model = coxph(formula = response ~ NumOfVisits + VisitInterval,data = mini)
 summary(cox.model)
 
+
+
 #Nelson-aalen estimater of cumulative hazard rate
 neal.surv = survfit(coxph(response~1), type="aalen")
 summary(neal.surv)
 ggsurv(neal.surv)
-
 
