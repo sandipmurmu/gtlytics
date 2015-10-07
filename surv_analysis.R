@@ -1,8 +1,12 @@
-#read customers data 
+#read censored data 
 ds = read.csv(file.choose(), header=TRUE)
-#head(customers)
-#create a data frame from the data set
 cdf = as.data.frame(ds)
+
+
+#install.packages("GGally")
+#install.packages("survival")
+library(GGally)
+library(survival)
 
 
 detach(mini)
@@ -10,53 +14,32 @@ detach(mini)
 mini= cdf[sample(nrow(cdf),1000, replace=FALSE, prob = NULL),]
 attach(mini)
 
-#install.packages("survival")
-library(survival)
 
+churn = Churn_90
 #derive response variable, referred as survival object
-response = Surv(ActivePeriod, Churn_60)
+response = Surv(ActivePeriod, churn)
 
 #Kaplain-Meier estimator with no covariates
 km.surv = survfit(response ~ 1,type="kaplan-meier",data=mini)
 summary(km.surv)
-plot(km.surv, mark.time = FALSE, xlab = "Days", ylab="Proportion Surviving")
-grid()
-
+#plot(km.surv, mark.time = FALSE, xlab = "Days", ylab="Proportion Surviving")
+ggsurv(km.surv)
 
 #Kaplain-Meier estimator by gender
 km.surv.gender = survfit(response ~ Sex,type="kaplan-meier",data=mini)
 summary(km.surv.gender)
-plot(km.surv.gender, mark.time = FALSE,  xlab = "Days Active", ylab="Percent Surviving")
-grid()
+#plot(km.surv.gender, mark.time = FALSE,  xlab = "Days Active", ylab="Percent Surviving")
+ggsurv(km.surv.gender)
 
 
-
-#Nelson-aalen
-km.surv.alen = survfit(coxph(Surv(cdf$days,cdf$churn)~1), type="aalen")
-summary(km.surv.alen)
-
-res = Surv(cdf$days,cdf$churn, type = "aalen")
 
 #Cox Regression using coxph function for coefficients and hazard rates
 cox.model = coxph(formula = response ~ NumOfVisits + VisitInterval,data = mini)
-cox.model
-#survival analysis for cox model
-summary(survfit(cox.model))
-plot(survfit(cox.model),xlab = "Month", ylab = "Proportion Survived", main="Hazard curve",mark.time = FALSE)
+summary(cox.model)
 
-#predict hazard ratio
-cox.zph(cox.model)
+#Nelson-aalen estimater of cumulative hazard rate
+neal.surv = survfit(coxph(response~1), type="aalen")
+summary(neal.surv)
+ggsurv(neal.surv)
 
-grid()
-
-#predRes <- predict(cox.response, type="risk")
-#head(predRes)
-
-
-#Paramteric analysis
-exp = survreg(response ~ NumOfVisits + VisitInterval, data = s1, dist = "exponential")
-summary(exp)
-
-weibull = survreg(response ~ NumOfVisits + VisitInterval, data=s1, dist = "weibull")
-summary(weibull)
 
