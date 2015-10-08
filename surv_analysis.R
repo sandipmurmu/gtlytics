@@ -26,7 +26,7 @@ attach(mini)
 
 churn = Churn_90
 #derive response variable, referred as survival object
-response = Surv(ActivePeriod, churn)
+response = Surv(days, churn)
 
 #Kaplain-Meier estimator with no covariates
 km.surv = survfit(response ~ 1,type="kaplan-meier",data=mini)
