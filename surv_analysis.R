@@ -51,6 +51,9 @@ ggsurv(survfit(cox.model), ylab = "Survival Probablity", main = "Survival Curve 
 #Hazard ratio
 cox.zph(cox.model)
 
+pred = predict(cox.model, type="risk")
+head(pred)
+summary(pred)
 
 #Nelson-aalen estimater of cumulative hazard rate
 neal.surv = survfit(coxph(response~1), type="aalen")
