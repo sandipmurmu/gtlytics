@@ -61,10 +61,10 @@ summary(neal.surv)
 ggsurv(neal.surv)
 
 #Parametric analysis - Exponential Distribution
-exp = survreg(response ~ NumOfVisits + VisitInterval, data = mini, dist = "exponential")
-summary(exp)
+exp.surv = survreg(response ~ NumOfVisits + VisitInterval, data = mini, dist = "exponential")
+summary(exp.surv)
 
 #Parametric analysis - Weibull Distribution
-weibull = survreg(response ~ NumOfVisits + VisitInterval, data=mini, dist = "weibull")
-summary(weibull)
+weibull.surv = survreg(response ~ NumOfVisits + VisitInterval, data=mini, dist = "weibull")
+summary(weibull.surv)
 
