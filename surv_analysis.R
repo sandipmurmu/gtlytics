@@ -24,8 +24,8 @@ mini= cdf[sample(nrow(cdf),1000, replace=FALSE, prob = NULL),]
 attach(mini)
 
 
-churn = mini$Churn_90
-time = mini$ActivePeriod
+churn = Churn_90
+time = ActivePeriod
 #derive response variable, referred as survival object
 response = Surv(time, churn)
 
