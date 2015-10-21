@@ -19,14 +19,15 @@ library(survival)
 
 
 detach(mini)
-#1000 samples randomly taken 
+#1000 samples, simple random sample
 mini= cdf[sample(nrow(cdf),1000, replace=FALSE, prob = NULL),]
 attach(mini)
 
 
-churn = Churn_90
+churn = mini$Churn_90
+time = mini$ActivePeriod
 #derive response variable, referred as survival object
-response = Surv(days, churn)
+response = Surv(time, churn)
 
 #Kaplain-Meier estimator with no covariates
 km.surv = survfit(response ~ 1,type="kaplan-meier",data=mini)
