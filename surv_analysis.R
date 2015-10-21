@@ -32,7 +32,7 @@ response = Surv(time, churn)
 #Kaplain-Meier estimator with no covariates
 km.surv = survfit(response ~ 1,type="kaplan-meier",data=mini)
 summary(km.surv) 
-ggsurv(km.surv, ylab = "Survival Probablity", main = "Survival Curve", cens.shape = 3, plot.cens = T)
+ggsurv(km.surv, ylab = "Survival Probablity", main = "Survival Curve, Kaplan-Meier estimation", cens.shape = 3, plot.cens = T)
 
 #Kaplain-Meier estimator by gender
 km.surv.gender = survfit(response ~ Sex,type="kaplan-meier",data=mini)
@@ -58,7 +58,7 @@ summary(pred)
 #Nelson-aalen estimater of cumulative hazard rate
 neal.surv = survfit(coxph(response~1), type="aalen")
 summary(neal.surv)
-ggsurv(neal.surv)
+ggsurv(neal.surv,ylab = "Survival Probablity", main = "Survival Curve, Nelson-Aalen Estimator", cens.shape = 3, plot.cens = T)
 
 #Parametric analysis - Exponential Distribution
 exp.surv = survreg(response ~ NumOfVisits + VisitInterval, data = mini, dist = "exponential")
