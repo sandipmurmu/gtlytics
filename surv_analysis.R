@@ -24,15 +24,15 @@ mini= cdf[sample(nrow(cdf),1000, replace=FALSE, prob = NULL),]
 attach(mini)
 
 
-churn = Churn_90
+churn = Churn_365
 time = ActivePeriod
 #derive response variable, referred as survival object
 response = Surv(time, churn)
 
 #Kaplain-Meier estimator with no covariates
 km.surv = survfit(response ~ 1,type="kaplan-meier",data=mini)
-summary(km.surv)
-ggsurv(km.surv)
+summary(km.surv) 
+ggsurv(km.surv, ylab = "Survival Probablity", main = "Survival Curve", cens.shape = 3, plot.cens = T)
 
 #Kaplain-Meier estimator by gender
 km.surv.gender = survfit(response ~ Sex,type="kaplan-meier",data=mini)
@@ -42,13 +42,26 @@ ggsurv(km.surv.gender)
 
 
 #Cox Regression using coxph function for coefficients and hazard rates
-cox.model = coxph(formula = response ~ NumOfVisits + VisitInterval,data = mini)
+cox.model = coxph(formula = response ~ NumOfVisits + VisitInterval  ,data = mini)
 summary(cox.model)
 
+#plot the Hazard curve
+ggsurv(survfit(cox.model), ylab = "Survival Probablity", main = "Survival Curve with cox regression", cens.shape = 3, plot.cens = T)
+
+#Hazard ratio
+cox.zph(cox.model)
 
 
 #Nelson-aalen estimater of cumulative hazard rate
 neal.surv = survfit(coxph(response~1), type="aalen")
 summary(neal.surv)
 ggsurv(neal.surv)
+
+#Parametric analysis - Exponential Distribution
+exp = survreg(response ~ NumOfVisits + VisitInterval, data = mini, dist = "exponential")
+summary(exp)
+
+#Parametric analysis - Weibull Distribution
+weibull = survreg(response ~ NumOfVisits + VisitInterval, data=mini, dist = "weibull")
+summary(weibull)
 
