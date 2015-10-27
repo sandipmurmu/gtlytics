@@ -8,8 +8,12 @@ cdf$FSeg = findInterval(cdf$NumOfVisits, quantile(cdf$NumOfVisits, c(0.0, 0.25, 
 cdf$MSeg = findInterval(cdf$AvgPurchase, quantile(cdf$AvgPurchase, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
 #cdf$F = cut(cdf$NumOfVisits, 5, labels = F)
 #cdf$R = cut(cdf$RecentVisit, 5, labels =F)
+cdf$rfm = paste(cdf$RSeg,cdf$FSeg,cdf$MSeg,sep = "")
 library(xlsx)
 write.xlsx(cdf, file = 'D:/statistics/churn_rf.xlsx', sheetName = "Churn", col.names = TRUE)
+
+
+
 
 cdf.rfm = cdf[c(1,17:19)]
 row.has.na <- apply(cdf.rfm, 1, function(x){any(is.na(x))})
