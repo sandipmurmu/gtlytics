@@ -2,32 +2,6 @@
 ds = read.csv(file.choose(), header=TRUE)
 cdf = as.data.frame(ds)
 
-#create a R, F variables 
-cdf$RSeg = findInterval(cdf$RecentVisit, quantile(cdf$RecentVisit, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
-cdf$FSeg = findInterval(cdf$NumOfVisits, quantile(cdf$NumOfVisits, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
-cdf$MSeg = findInterval(cdf$AvgPurchase, quantile(cdf$AvgPurchase, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
-#cdf$F = cut(cdf$NumOfVisits, 5, labels = F)
-#cdf$R = cut(cdf$RecentVisit, 5, labels =F)
-cdf$rfm = paste(cdf$RSeg,cdf$FSeg,cdf$MSeg,sep = "")
-library(xlsx)
-write.xlsx(cdf, file = 'D:/statistics/churn_rf.xlsx', sheetName = "Churn", col.names = TRUE)
-
-
-
-
-cdf.rfm = cdf[c(1,17:19)]
-row.has.na <- apply(cdf.rfm, 1, function(x){any(is.na(x))})
-sum(row.has.na)
-final.rfm = cdf.rfm[!row.has.na,]
-km = kmeans(final.rfm, centers = 5)
-aggregate(final.rfm, by = list(km$cluster), FUN = mean)
-final.rfm = data.frame(final.rfm, km$cluster)
-
-#subset
-#library(sqldf)
-#cdf.sub = sqldf("select ClientID, Sex, First_Purchase, Last_Purchase, NumOfVisits, VisitInterval, TotalPurchase, AvgPurchase, RecentVisit from cdf where Churn_90=1")
-km = kmeans(cdf.sub, centers = 3)
-
 
 #plot the distribution of the data set
 days = cdf$ActivePeriod
@@ -37,6 +11,30 @@ plot(d)
 z= (days-mean(days))/sd(days) 
 qqnorm(z)
 abline(0,1)
+
+library(xlsx)
+##customer Segmentation
+
+#create Recency, Frequency and Monetory segmentation
+cdf$RSeg = findInterval(cdf$RecentVisit, quantile(cdf$RecentVisit, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
+cdf$FSeg = findInterval(cdf$NumOfVisits, quantile(cdf$NumOfVisits, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
+cdf$MSeg = findInterval(cdf$AvgPurchase, quantile(cdf$AvgPurchase, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
+
+cdf = na.omit(cdf)
+write.xlsx(cdf, file = 'D:/statistics/churn_rfm.xlsx', sheetName = "RFM", col.names = TRUE)
+#create a subset data
+
+
+RFM = cdf[c(2,17:19)]
+
+#Segmentation using K-Means Cluster
+km = kmeans(RFM[2:4], centers = 4)
+aggregate(RFM[2:4], by=list(km$cluster), FUN=mean)
+kluster = data.frame(RFM, km$cluster)
+
+write.xlsx(kluster, file = 'D:/statistics/BigCluster.xlsx', sheetName = "Cluster", col.names = TRUE)
+
+
 
 
 #install.packages("GGally")
@@ -94,4 +92,28 @@ summary(exp.surv)
 #Parametric analysis - Weibull Distribution
 weibull.surv = survreg(response ~ NumOfVisits + VisitInterval, data=mini, dist = "weibull")
 summary(weibull.surv)
+
+#churn period (90 days) analysis
+cd = cdf[which(cdf$ActivePeriod < 90),]
+
+#create Recency, Frequency and Monetory segmentation
+cd$RSeg = findInterval(cd$RecentVisit, quantile(cd$RecentVisit, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
+cd$FSeg = findInterval(cd$NumOfVisits, quantile(cd$NumOfVisits, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
+cd$MSeg = findInterval(cd$AvgPurchase, quantile(cd$AvgPurchase, c(0.0, 0.25, 0.50, 0.75, 1.0), na.rm = TRUE))
+
+cd = na.omit(cd)
+
+#create a subset data
+cd.rfm = cd[c(2,17:19)]
+
+#Segmentation using K-Means Cluster
+cd.km = kmeans(cd.rfm[2:4] , centers = 4)
+aggregate(cd.rfm[2:4] , by=list(cd.km$cluster), FUN=mean)
+cd.kluster = data.frame(cd.rfm , cd.km$cluster)
+head(cd.kluster)
+
+
+write.xlsx(cd.kluster, file = 'D:/statistics/kluster_90.xlsx', sheetName = "ChurnCluster", col.names = TRUE)
+
+
 
