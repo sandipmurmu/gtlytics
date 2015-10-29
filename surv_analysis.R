@@ -31,7 +31,6 @@ RFM = cdf[c(2,17:19)]
 km = kmeans(RFM[2:4], centers = 4)
 aggregate(RFM[2:4], by=list(km$cluster), FUN=mean)
 kluster = data.frame(RFM, km$cluster)
-
 write.xlsx(kluster, file = 'D:/statistics/BigCluster.xlsx', sheetName = "Cluster", col.names = TRUE)
 
 
@@ -110,8 +109,6 @@ cd.rfm = cd[c(2,17:19)]
 cd.km = kmeans(cd.rfm[2:4] , centers = 4)
 aggregate(cd.rfm[2:4] , by=list(cd.km$cluster), FUN=mean)
 cd.kluster = data.frame(cd.rfm , cd.km$cluster)
-head(cd.kluster)
-
 
 write.xlsx(cd.kluster, file = 'D:/statistics/kluster_90.xlsx', sheetName = "ChurnCluster", col.names = TRUE)
 
